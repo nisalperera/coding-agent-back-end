@@ -20,7 +20,7 @@ these tools has no way to know or supply a real token.
 
 Unlike GitHub (whose per-user token is stored server-side in DynamoDB via
 github_oauth.py), GitLab's per-user token lives only in the browser
-(localStorage, PKCE public client) and is sent by the front-end on each
+(localStorage, PKCE public client) and is sent by the coding-agent-front-end on each
 `approve_pending` request. lambda_function.py passes it through for that one
 call only and never persists it.
 """
@@ -233,7 +233,7 @@ GITHUB_TOOL_NAMES = {
 
 
 # Tool names whose functions accept a server-injected `gitlab_token` kwarg.
-# Populated per-request from the front-end's locally-stored GitLab PKCE
+# Populated per-request from the coding-agent-front-end's locally-stored GitLab PKCE
 # token (never stored server-side) — see lambda_function.py's
 # `approve_pending` handling of `body["gitlab_token"]`.
 GITLAB_TOOL_NAMES = {

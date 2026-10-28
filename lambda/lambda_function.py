@@ -10,7 +10,7 @@ AWS Lambda backend for the Perplexity-style web app.
 - Routes risky tool calls (write_file, run_shell, and GitHub/GitLab repo-management
   tools) through a human-in-the-loop pending-action flow backed by DynamoDB.
 - For GitHub tools, uses the connecting user's own stored OAuth token (DynamoDB)
-  when available. For GitLab tools, uses a per-request token sent by the front-end
+  when available. For GitLab tools, uses a per-request token sent by the coding-agent-front-end
   with the approval decision (never persisted server-side).
 - Lets a user revoke their stored GitHub integration server-side ("disconnect_integration").
 - Calls a self-hosted vLLM server (Qwen3-Coder-14B) over the VPC.
@@ -233,7 +233,7 @@ def call_repo_tool(name, args, user_id, gitlab_token=None):
     - github_* tools: injects the calling user's own stored GitHub OAuth
       token (if connected), falling back to the shared GITHUB_TOKEN.
     - gitlab_* tools: injects `gitlab_token` if the caller supplied one with
-      this specific request (front-end sends its browser-local GitLab PKCE
+      this specific request (coding-agent-front-end sends its browser-local GitLab PKCE
       token per-request; it is never stored server-side). Falls back to the
       shared GITLAB_TOKEN when absent.
     """

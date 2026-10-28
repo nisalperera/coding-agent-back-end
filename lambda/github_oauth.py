@@ -1,5 +1,5 @@
 """
-back-end/github_oauth.py
+coding-agent-back-end/github_oauth.py
 
 GitHub OAuth App "user-to-server" token exchange for the coding agent.
 
@@ -10,7 +10,7 @@ the existing `action == "approve_pending"` branch already in
 lambda_function.py.
 
 Flow:
-  1. Front-end (front-end/index.html, connectGitHub()) redirects the user to
+  1. Front-end (coding-agent-front-end/index.html, connectGitHub()) redirects the user to
      GitHub's authorize endpoint with a PKCE-independent CSRF `state`.
   2. GitHub redirects back to /callback/github with `code` + `state`.
   3. Front-end POSTs {"action": "github_oauth_callback", "code": ..., "redirect_uri": ...}
