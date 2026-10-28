@@ -118,7 +118,6 @@ async def call_vllm(client: httpx.AsyncClient, messages: list[dict[str, Any]], u
         logging.INFO,
         "vllm_request_initiated",
         **{
-            "request_payload": payload,
             "request_url": user_settings.llm_endpoint_url,
             "request_headers": {
                 key: value
