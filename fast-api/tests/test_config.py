@@ -98,6 +98,8 @@ def test_development_localhost_configuration_loads(monkeypatch: pytest.MonkeyPat
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
+    assert settings.TRUSTED_ORIGINS == ["http://localhost:3000"]
+    assert settings.OPERATOR_USER_IDS == set()
 
 
 def test_markdown_formatted_cors_origin_is_rejected(
@@ -111,6 +113,35 @@ def test_markdown_formatted_cors_origin_is_rejected(
             "[http://127.0.0.1:3000](http://127.0.0.1:3000)"
         ),
     )
+
+
+def test_markdown_formatted_trusted_origin_is_rejected(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    _assert_config_error(
+        monkeypatch,
+        "TRUSTED_ORIGINS must be an absolute HTTP(S) URL",
+        TRUSTED_ORIGINS=(
+            "http://localhost:3000,"
+            "[http://127.0.0.1:3000](http://127.0.0.1:3000)"
+        ),
+    )
+
+
+def test_operator_user_ids_are_parsed_from_environment(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    settings = _load_settings(
+        monkeypatch,
+        OPERATOR_USER_IDS=(
+            "11111111-1111-1111-1111-111111111111,"
+            "22222222-2222-2222-2222-222222222222"
+        ),
+    )
+    assert settings.OPERATOR_USER_IDS == {
+        "11111111-1111-1111-1111-111111111111",
+        "22222222-2222-2222-2222-222222222222",
+    }
 
 
 @pytest.mark.parametrize(
