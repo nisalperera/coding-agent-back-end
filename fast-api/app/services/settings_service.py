@@ -120,7 +120,7 @@ def create_integration_settings(current_user: User | dict[str, Any]) -> UserSett
     return build_user_settings_response(settings_record)
 
 
-async def reset_integration_settings(authenticated_user: User) -> UserSettingsResponse:
+def reset_integration_settings(authenticated_user: User) -> UserSettingsResponse:
     if authenticated_user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

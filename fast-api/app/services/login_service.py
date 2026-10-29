@@ -12,7 +12,8 @@ from app.core.security import hash_password, set_auth_cookie, verify_password
 from app.db.core.sessions_repository import create_session, delete_session
 from app.db.models.common import User, new_uuid
 from app.db.core.users_repository import get_user_by_email, get_users_count_by_prefix, put_user
-from app.services.settings_service import reset_integration_settings, get_user_settings
+# from app.services.settings_service import reset_integration_settings, get_user_settings
+from app.services.settings_service import create_integration_settings
 
 MAX_USERNAME_LENGTH = 64
 
@@ -49,7 +50,7 @@ async def check_if_user_exists(email: str) -> bool:
     if existing_user:
         raise HTTPException(
             status_code=409,
-            detail="Unable to create an account with these details",
+            detail="User already exists with this email address",
         )
     return existing_user is not None
 
@@ -71,10 +72,11 @@ async def save_user(username: str, email: str, name: str, password: str, respons
         )
     
     saved_user = await asyncio.to_thread(put_user, user)  # Raises HTTPException if user exists
+    user_settings = await asyncio.to_thread(create_integration_settings, saved_user)  # Initialize default settings for the new user
 
     token = await asyncio.to_thread(create_session, user.user_id)
     set_auth_cookie(response, token)
-    user_settings = await asyncio.to_thread(reset_integration_settings, saved_user)  # Initialize default settings for the new user
+    
     return saved_user, user_settings
 
 
@@ -82,6 +84,7 @@ async def user_login(payload: LoginRequest, response: Response) -> tuple[UserRes
     email = normalize_email(str(payload.email))
     
     user = await asyncio.to_thread(get_user_by_email, email, return_password=True)  # Raises HTTPException if user does not exist
+    user_settings = await asyncio.to_thread(create_integration_settings, User(**user))  # Ensure user settings are initialized
 
     hashed_password = user.pop("password_hash") if user else None
 
@@ -98,8 +101,6 @@ async def user_login(payload: LoginRequest, response: Response) -> tuple[UserRes
 
     token = await asyncio.to_thread(create_session, user["user_id"])
     set_auth_cookie(response, token)
-
-    user_settings = await asyncio.to_thread(get_user_settings, User(**user))  # Ensure user settings are initialized
 
     return UserResponse(**user), user_settings
 

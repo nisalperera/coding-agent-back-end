@@ -68,21 +68,23 @@ def create_user_settings(user_id: str) -> UserSettings:
         return new_settings
 
 
-def get_user_settings(user_id: str) -> Optional[UserSettings]:
-
+def get_user_settings(user_id: str) -> UserSettings:
     with db_session() as session:
         settings_record = session.scalar(
             select(UserSettings)
             .where(UserSettings.user_id == user_id)
             .with_for_update()
         )
-        _check_empty_settings(settings_record)
 
-        settings_record.last_seen_at = current_time_ms()
-        session.commit()
-        session.refresh(settings_record)
+        if settings_record is not None:
+            settings_record.last_seen_at = current_time_ms()
+            session.flush()
+            session.refresh(settings_record)
 
-        return settings_record
+            return settings_record
+
+    # Recover a missing settings row, without modifying an existing one.
+    return create_user_settings(user_id)
 
 
 def reset_user_settings(user_id: str) -> Optional[UserSettings]:

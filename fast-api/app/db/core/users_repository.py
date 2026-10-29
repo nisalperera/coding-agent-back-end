@@ -85,7 +85,7 @@ def get_user_by_id(user_id: str) -> Optional[dict[str, Any]]:
             "picture": user.picture,
         }
 
-async def get_user_by_email(email: str, return_password: bool = False) -> Optional[dict[str, Any]]:
+def get_user_by_email(email: str, return_password: bool = False) -> Optional[dict[str, Any]]:
     with db_session() as session:
         user = session.scalar(select(User).where(User.email == email))
         if user is None:
@@ -118,7 +118,7 @@ def get_users_count_by_prefix(candidate: str) -> int:
         return 0
     return len(existing)
 
-async def put_user(user: User) -> User:
+def put_user(user: User) -> User:
     with db_session() as session:
         session.add(user)
         try:
