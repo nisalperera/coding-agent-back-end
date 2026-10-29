@@ -1,0 +1,32 @@
+stages:
+  - lint
+  - test
+
+default:
+  image: python:3.12
+  services:
+    - name: postgres:16
+      alias: postgres
+    - name: mongo:7
+      alias: mongo
+  variables:
+    POSTGRES_DB: coding_agent
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    DATABASE_URL: "******postgres:5432/coding_agent"
+    MONGODB_URI: "******mongo:27017/"
+    PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  before_script:
+    - cd fast-api
+    - python -m pip install --upgrade pip
+    - pip install -r requirements.txt -r requirements-dev.txt
+
+project-lint:
+  stage: lint
+  script:
+    - python -m compileall app tests
+
+project-tests:
+  stage: test
+  script:
+    - python -m pytest -q tests/test_config.py tests/test_projects_api.py tests/test_projects_repository.py

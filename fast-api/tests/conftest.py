@@ -35,16 +35,17 @@ os.environ["INTEGRATION_TOKEN_ENCRYPTION_KEY"] = Fernet.generate_key().decode("u
 
 # Test database configuration. This must point only to a disposable MySQL
 # database used by the existing cleanup fixture and test environment.
-os.environ["DATABASE_URL"] = (
-    "postgresql+psycopg://coding_agent:coding_agent@localhost:5432/coding_agent"
+os.environ.setdefault(
+    "DATABASE_URL",
+    "postgresql+psycopg://coding_agent:coding_agent@localhost:5432/coding_agent",
 )
 os.environ["DATABASE_POOL_SIZE"] = "5"
 os.environ["DATABASE_MAX_OVERFLOW"] = "10"
 os.environ["DATABASE_POOL_RECYCLE_S"] = "1800"
 os.environ["DATABASE_CONNECT_TIMEOUT_S"] = "10"
 
-os.environ["MONGODB_URI"] = "mongodb://coding-agent:coding-agent%40pwd@localhost:27017/"
-os.environ["MONGODB_DATABASE"] = "coding_agent"
+os.environ.setdefault("MONGODB_URI", "mongodb://coding-agent:coding-agent%40pwd@localhost:27017/")
+os.environ.setdefault("MONGODB_DATABASE", "coding_agent")
 
 # Existing external-service test configuration.
 os.environ["TAVILY_API_KEY"] = "test-tavily-key"
@@ -97,6 +98,7 @@ from app.db.models.common import (
     User,
     UserIntegration,
 )
+from app.db.models.projects import Project, ProjectSettingsVersion
 
 
 @pytest.fixture
@@ -130,6 +132,8 @@ def clean_database() -> Iterator[None]:
         session.execute(delete(OAuthState))
         session.execute(delete(PendingAction))
         session.execute(delete(UserIntegration))
+        session.execute(delete(ProjectSettingsVersion))
+        session.execute(delete(Project))
         session.execute(delete(SessionRecord))
         session.execute(delete(User))
         session.commit()

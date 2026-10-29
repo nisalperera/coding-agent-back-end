@@ -106,6 +106,10 @@ class Settings:
     FRONTEND_ORIGIN: str = _require("FRONTEND_ORIGIN")
     CORS_ALLOW_ORIGINS_RAW: str = _optional("CORS_ALLOW_ORIGINS", FRONTEND_ORIGIN)
     CORS_ALLOW_ORIGINS: list[str] = Field(default_factory=list)
+    TRUSTED_ORIGINS_RAW: str = _optional("TRUSTED_ORIGINS", FRONTEND_ORIGIN)
+    TRUSTED_ORIGINS: list[str] = Field(default_factory=list)
+    OPERATOR_USER_IDS_RAW: str = _optional("OPERATOR_USER_IDS", "")
+    OPERATOR_USER_IDS: set[str] = set()
 
     INTEGRATION_TOKEN_ENCRYPTION_KEY: str = _optional(
         "INTEGRATION_TOKEN_ENCRYPTION_KEY"
@@ -276,6 +280,22 @@ settings.CORS_ALLOW_ORIGINS = [
     for origin in settings.CORS_ALLOW_ORIGINS_RAW.split(",")
     if origin.strip()
 ]
+
+settings.TRUSTED_ORIGINS = [
+    _validate_http_url(
+        "TRUSTED_ORIGINS",
+        origin.strip(),
+        allow_local_http=local_env,
+    )
+    for origin in settings.TRUSTED_ORIGINS_RAW.split(",")
+    if origin.strip()
+]
+
+settings.OPERATOR_USER_IDS = {
+    user_id.strip()
+    for user_id in settings.OPERATOR_USER_IDS_RAW.split(",")
+    if user_id.strip()
+}
 
 settings.validate()
 settings.require_database_configuration()
