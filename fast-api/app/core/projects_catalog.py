@@ -3,7 +3,15 @@ from __future__ import annotations
 from collections.abc import Mapping
 
 TECHNOLOGY_CATALOG: Mapping[str, tuple[str, ...]] = {
-    "languages": ("python", "typescript", "javascript", "java", "go", "rust"),
+    "languages": (
+        "python",
+        "typescript",
+        "javascript",
+        "java",
+        "go",
+        "rust",
+        "cpp",
+    ),
     "frameworks": ("fastapi", "django", "flask", "react", "nextjs", "spring", "gin", "actix"),
     "runtimes": ("node", "bun", "deno", "python", "jvm"),
     "databaseCategories": ("sql", "nosql", "cache", "search", "vector"),

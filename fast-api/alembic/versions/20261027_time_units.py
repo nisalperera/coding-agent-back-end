@@ -2,7 +2,7 @@
 from alembic import op
 import sqlalchemy as sa
 
-revision = "20261027_r4_time_units"
+revision = "20261027_time_units"
 down_revision = "20261027_action_claims"
 branch_labels = None
 depends_on = None
@@ -36,7 +36,7 @@ def upgrade():
                 f'OR ("{field}" >= :m0 AND "{field}" < :m1))'
             ), dict(s0=SECONDS[0], s1=SECONDS[1], m0=MILLISECONDS[0], m1=MILLISECONDS[1])).scalar_one()
             if invalid:
-                raise RuntimeError(f"R4 timestamp preflight refused: {table}.{field}; review data before migration")
+                raise RuntimeError(f"Timestamp preflight refused: {table}.{field}; review data before migration")
     for table, (unit, fields) in FIELDS.items():
         low, high = SECONDS if unit == "ms" else MILLISECONDS
         for field in fields:
@@ -47,4 +47,4 @@ def upgrade():
 
 
 def downgrade():
-    raise RuntimeError("R4 unit normalization is irreversible: legacy source units cannot be reconstructed. Restore a reviewed backup instead.")
+    raise RuntimeError("Unit normalization is irreversible: legacy source units cannot be reconstructed. Restore a reviewed backup instead.")
